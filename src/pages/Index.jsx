@@ -5,10 +5,10 @@ import { FaPlus, FaTrash } from "react-icons/fa";
 const Index = () => {
   const [crewWorkflow, setCrewWorkflow] = useState([{ crew_name: "Dev Crew", output_name: "code", send_global_data_parameters: true }]);
 
-  const [dataParameters, setDataParameters] = useState({
-    requirements: "Create an API that can return 'Hello World'",
-    more_data: "lala",
-  });
+  const [dataParameters, setDataParameters] = useState([
+    { name: "Requirements", value: "Create an API that can return 'Hello World'" },
+    { name: "More Data", value: "lala" },
+  ]);
 
   const handleCrewChange = (index, field, value) => {
     const newCrewWorkflow = [...crewWorkflow];
@@ -16,8 +16,19 @@ const Index = () => {
     setCrewWorkflow(newCrewWorkflow);
   };
 
-  const handleDataParametersChange = (field, value) => {
-    setDataParameters({ ...dataParameters, [field]: value });
+  const handleDataParametersChange = (index, field, value) => {
+    const newDataParameters = [...dataParameters];
+    newDataParameters[index][field] = value;
+    setDataParameters(newDataParameters);
+  };
+
+  const addDataParameter = () => {
+    setDataParameters([...dataParameters, { name: "", value: "" }]);
+  };
+
+  const removeDataParameter = (index) => {
+    const newDataParameters = dataParameters.filter((_, i) => i !== index);
+    setDataParameters(newDataParameters);
   };
 
   const addCrew = () => {
@@ -63,14 +74,26 @@ const Index = () => {
         <Text fontSize="2xl" fontWeight="bold">
           Data Parameters
         </Text>
-        <FormControl>
-          <FormLabel>Requirements</FormLabel>
-          <Textarea value={dataParameters.requirements} onChange={(e) => handleDataParametersChange("requirements", e.target.value)} />
-        </FormControl>
-        <FormControl>
-          <FormLabel>More Data</FormLabel>
-          <Textarea value={dataParameters.more_data} onChange={(e) => handleDataParametersChange("more_data", e.target.value)} />
-        </FormControl>
+        {dataParameters.map((param, index) => (
+          <Box key={index} p={4} borderWidth="1px" borderRadius="md" width="100%">
+            <HStack spacing={4} mb={4}>
+              <FormControl>
+                <FormLabel>Parameter Name</FormLabel>
+                <Input value={param.name} onChange={(e) => handleDataParametersChange(index, "name", e.target.value)} />
+              </FormControl>
+              <FormControl>
+                <FormLabel>Parameter Value</FormLabel>
+                <Textarea value={param.value} onChange={(e) => handleDataParametersChange(index, "value", e.target.value)} />
+              </FormControl>
+              <Button colorScheme="red" onClick={() => removeDataParameter(index)}>
+                <FaTrash />
+              </Button>
+            </HStack>
+          </Box>
+        ))}
+        <Button leftIcon={<FaPlus />} colorScheme="teal" onClick={addDataParameter}>
+          Add Parameter
+        </Button>
       </VStack>
     </Container>
   );
